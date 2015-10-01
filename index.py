@@ -105,7 +105,11 @@ def check_process(uuid):
                 
                     result=json.loads(line)
                     
+                    f.close()
+                    
                 except:
+                    
+                    f.close()
                     
                     result['MESSAGE']='Cannot decode json message'
 
