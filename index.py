@@ -21,9 +21,9 @@ if not hasattr(config, 'python_command'):
 else:
     python_command=config.python_command
 
-def check_hash():
+def check_hash(secret_key):
 
-        secret_key=request.query.get('secret_key', '')
+        #secret_key=request.query.get('secret_key', '')
         
         if secret_key!='':
         
@@ -40,14 +40,14 @@ def check_hash():
             if final_hash==config.SECRET_KEY_HASHED_WITH_PASS:
                 return True
 
-@route('/pastafari')
-def home():  
+@route('/pastafari/<secret_key>')
+def home(secret_key):  
 
     if filterip()==True:
         
-        result={'ERROR': 0, 'MESSAGE': ''}
+        result={'ERROR': 0, 'MESSAGE': '', 'CODE_ERROR': 0}
 
-        if check_hash():
+        if check_hash(secret_key):
 
             if request.query.get('script', '')!='' and request.query.get('module', '')!='' and request.query.get('category', '')!='':
                 
@@ -58,7 +58,6 @@ def home():
                 del request.query['script']
                 del request.query['module']
                 del request.query['category']
-                del request.query['secret_key']
                 
                 arr_params=[ '--'+x+' '+y for x,y in request.query.items() ]
                 
@@ -72,11 +71,17 @@ def home():
 
                 result['UUID']=uuid
 
-            result['MESSAGE']='Executing script...'
+                result['MESSAGE']='Executing script...'
+            else:
+                
+                result['ERROR']=1
+                result['MESSAGE']='Not task specified'
+                result['CODE_ERROR']=1
 
         else:
             result['ERROR']=1
             result['MESSAGE']='Not authenticated'
+            result['CODE_ERROR']=2
 
         return result
     
@@ -84,17 +89,17 @@ def home():
         
         return 'This IP is not allowed'
 
-@route('/pastafari/check_process/<uuid>')
-def check_process(uuid):
+@route('/pastafari/check_process/<secret_key>/<uuid>')
+def check_process(secret_key, uuid):
     
     uuid=uuid.replace('/', '-')
     uuid=uuid.replace("\\", '-')
     
     if filterip()==True:
         
-        result={'ERROR': 1, 'MESSAGE': ''}
+        result={'ERROR': 1, 'MESSAGE': '', 'CODE_ERROR' : 0}
 
-        if check_hash():
+        if check_hash(secret_key):
             if os.path.isfile(logs+'/log_'+uuid):
                 f=open(logs+'/log_'+uuid)
                 

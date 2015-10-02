@@ -63,7 +63,7 @@ try:
 
     logging.basicConfig(format='%(message)s', filename=logs+'/log_'+args.uuid,level=logging.INFO)
 
-    logging.info('{"MESSAGE": "Running script server...", "ERROR:" 0, "EXIT_CODE": 0}')
+    logging.info('{"MESSAGE": "Running script server...", "ERROR:" 0, "CODE_ERROR": 0, "EXIT_CODE": 0}')
 
     for line in script.stdout:
         line=line.decode('utf-8').rstrip()
@@ -86,7 +86,7 @@ try:
     
     if script.returncode!=0:
         error=1
-        logging.info('{"EXIT_CODE": "'+str(script.returncode)+'", "MESSAGE": "'+" ".join(arr_error)+'", "ERROR": '+str(error)+'}')
+        logging.info('{"EXIT_CODE": "'+str(script.returncode)+'", "CODE_ERROR": 1, "MESSAGE": "'+" ".join(arr_error)+'", "ERROR": '+str(error)+'}')
     
 
 except:
