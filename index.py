@@ -5,6 +5,7 @@ from citoplasma.filterip import filterip
 #from multiprocessing import Process, Pipe
 from subprocess import Popen, PIPE
 from uuid import uuid4
+from shlex import quote
 import hashlib
 import os
 import signal 
@@ -20,6 +21,8 @@ if not hasattr(config, 'python_command'):
         python_command='python3'
 else:
     python_command=config.python_command
+
+cache_file_scripts=[]
 
 def check_hash(secret_key):
 
@@ -43,6 +46,8 @@ def check_hash(secret_key):
 @route('/pastafari/<secret_key>')
 def home(secret_key):  
 
+    global cache_file_scripts
+
     if filterip()==True:
         
         result={'ERROR': 0, 'MESSAGE': '', 'CODE_ERROR': 0}
@@ -51,33 +56,61 @@ def home(secret_key):
 
             if request.query.get('script', '')!='' and request.query.get('module', '')!='' and request.query.get('category', '')!='':
                 
+                file=open('./settings/scripts')
+                
+                new_line=''
+                
+                if len(cache_file_scripts)==0:
+                    for line in file:
+                        cache_file_scripts.append(line.strip())                   
+                else:
+                    for line in reversed(list(file)):
+                        #cache_file_scripts.append(line.strip())
+                        new_line=line.strip()
+                        
+                        if new_line!='':
+                            break
+                    if new_line not in cache_file_scripts:
+                        cache_file_scripts.append(new_line)
+                        
+                file.close()
+                print(cache_file_scripts)
                 uuid=str(uuid4())
                 
                 script=os.path.basename(request.query['category'])+'/'+os.path.basename(request.query['module'])+'/'+os.path.basename(request.query['script'])
                 
-                del request.query['script']
-                del request.query['module']
-                del request.query['category']
+                script=quote(script)
                 
-                arr_params=[ '--'+x+' '+y for x,y in request.query.items() ]
+                if script in cache_file_scripts:
                 
-                params=' '.join(arr_params)
-                
-                args=['sudo '+python_command+' '+config.base_modules.replace('.', '/')+'/pastafari/daemon/daemon.py --script "'+script+'" --uuid '+uuid+' --arguments "'+params+'"']
+                    #Search script in list of scripts
+                    
+                    del request.query['script']
+                    del request.query['module']
+                    del request.query['category']
+                    
+                    arr_params=[ '--'+x+' '+y for x,y in request.query.items() ]
+                    
+                    params=' '.join(arr_params)
+                    
+                    args=['sudo '+python_command+' '+config.base_modules.replace('.', '/')+'/pastafari/daemon/daemon.py --script "'+script+'" --uuid '+uuid+' --arguments "'+params+'"']
 
-                daemon=Popen(args, bufsize=-1, executable=None, stdin=None, stdout=None, stderr=None, preexec_fn=None, close_fds=True, shell=True, cwd=None, env=None, universal_newlines=True, startupinfo=None, creationflags=0, restore_signals=True, start_new_session=True, pass_fds=())
+                    daemon=Popen(args, bufsize=-1, executable=None, stdin=None, stdout=None, stderr=None, preexec_fn=None, close_fds=True, shell=True, cwd=None, env=None, universal_newlines=True, startupinfo=None, creationflags=0, restore_signals=True, start_new_session=True, pass_fds=())
 
-                #daemon.pid
+                    #daemon.pid
 
-                result['UUID']=uuid
+                    result['UUID']=uuid
 
-                result['MESSAGE']='Executing script...'
+                    result['MESSAGE']='Executing script...'
+                else:
+                    result['ERROR']=1
+                    result['MESSAGE']='Scripts not exists in database'
+                    result['CODE_ERROR']=3
             else:
-                
                 result['ERROR']=1
                 result['MESSAGE']='Not task specified'
                 result['CODE_ERROR']=1
-
+                
         else:
             result['ERROR']=1
             result['MESSAGE']='Not authenticated'
