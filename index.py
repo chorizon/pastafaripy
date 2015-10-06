@@ -43,8 +43,9 @@ def check_hash(secret_key):
             if final_hash==config.SECRET_KEY_HASHED_WITH_PASS:
                 return True
 
+@route('/pastafari')
 @route('/pastafari/<secret_key>')
-def home(secret_key):  
+def home(secret_key=''):  
 
     global cache_file_scripts
 
