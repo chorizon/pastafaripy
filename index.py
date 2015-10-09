@@ -57,25 +57,27 @@ def home(secret_key=''):
 
             if request.query.get('script', '')!='' and request.query.get('module', '')!='' and request.query.get('category', '')!='':
                 
-                file=open('./settings/scripts')
+                if os.path.isfile('./settings/scripts'):
                 
-                new_line=''
-                
-                if len(cache_file_scripts)==0:
-                    for line in file:
-                        cache_file_scripts.append(line.strip())                   
-                else:
-                    for line in reversed(list(file)):
-                        #cache_file_scripts.append(line.strip())
-                        new_line=line.strip()
-                        
-                        if new_line!='':
-                            break
-                    if new_line not in cache_file_scripts:
-                        cache_file_scripts.append(new_line)
-                        
-                file.close()
-                print(cache_file_scripts)
+                    file=open('./settings/scripts')
+                    
+                    new_line=''
+                    
+                    if len(cache_file_scripts)==0:
+                        for line in file:
+                            cache_file_scripts.append(line.strip())                   
+                    else:
+                        for line in reversed(list(file)):
+                            #cache_file_scripts.append(line.strip())
+                            new_line=line.strip()
+                            
+                            if new_line!='':
+                                break
+                        if new_line not in cache_file_scripts:
+                            cache_file_scripts.append(new_line)
+                            
+                    file.close()
+
                 uuid=str(uuid4())
                 
                 script=os.path.basename(request.query['category'])+'/'+os.path.basename(request.query['module'])+'/'+os.path.basename(request.query['script'])
