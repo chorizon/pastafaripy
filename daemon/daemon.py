@@ -86,7 +86,8 @@ try:
     
     if script.returncode!=0:
         error=1
-        logging.info('{"EXIT_CODE": "'+str(script.returncode)+'", "CODE_ERROR": 1, "MESSAGE": "'+" ".join(arr_error)+'", "ERROR": '+str(error)+'}')
+        #logging.info('{"EXIT_CODE": "'+str(script.returncode)+'", "CODE_ERROR": 1, "MESSAGE": "'+" ".join(arr_error)+'", "ERROR": '+str(error)+'}')
+        logging.info('{"EXIT_CODE": "'+str(script.returncode)+'", "CODE_ERROR": 1, "MESSAGE": "'+" ".join(arr_error)+'", "ERROR": '+str(error)+', "PROGRESS": 100}')
     
 
 except:
