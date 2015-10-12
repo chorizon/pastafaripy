@@ -105,19 +105,25 @@ def home(secret_key=''):
                     result['UUID']=uuid
 
                     result['MESSAGE']='Executing script...'
+                    
+                    result['PROGRESS']=0
+                    
                 else:
                     result['ERROR']=1
                     result['MESSAGE']='Scripts not exists in database'
                     result['CODE_ERROR']=3
+                    result['PROGRESS']=100
             else:
                 result['ERROR']=1
                 result['MESSAGE']='Not task specified'
                 result['CODE_ERROR']=1
+                result['PROGRESS']=100
                 
         else:
             result['ERROR']=1
             result['MESSAGE']='Not authenticated'
             result['CODE_ERROR']=2
+            result['PROGRESS']=100
 
         return result
     
