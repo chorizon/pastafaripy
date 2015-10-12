@@ -139,7 +139,7 @@ def check_process(secret_key, uuid):
     
     if filterip()==True:
         
-        result={'ERROR': 1, 'MESSAGE': '', 'CODE_ERROR' : 0}
+        result={'ERROR': 1, 'MESSAGE': '', 'CODE_ERROR' : 0, 'PROGRESS': 100}
 
         if check_hash(secret_key):
             if os.path.isfile(logs+'/log_'+uuid):
