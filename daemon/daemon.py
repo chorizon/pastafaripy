@@ -29,7 +29,7 @@ if not hasattr(config, 'logs_pastafari'):
     logs='./logs'
 else:
     logs=config.logs_pastafari
-    
+
 if not hasattr(config, 'scripts_pastafari'):
     scripts_path='./scripts'
 else:
@@ -57,16 +57,21 @@ try:
     
     script_interpreter=''
     
-    file_line=open(source_file)      
+    file_line=open(scripts_path+'/'+args.script)      
     
     execute_line=file_line.readline()
     
     file_line.close()
     
+    if args.arguments==None:
+        arguments=''
+    else:
+        arguments=args.arguments
+    
     if execute_line.find("#!")==0:
         script_interpreter=execute_line.replace('#!', '').strip()+' '
-
-    script=Popen(script_interpreter+scripts_path+'/'+args.script+' '+args.arguments, bufsize=-1, executable=None, stdin=None, stdout=PIPE, stderr=PIPE, preexec_fn=None, close_fds=True, shell=True, cwd=None, env=None, universal_newlines=False, startupinfo=None, creationflags=0, restore_signals=True, start_new_session=False, pass_fds=())
+    
+    script=Popen(script_interpreter+scripts_path+'/'+args.script+' '+arguments, bufsize=-1, executable=None, stdin=None, stdout=PIPE, stderr=PIPE, preexec_fn=None, close_fds=True, shell=True, cwd=None, env=None, universal_newlines=False, startupinfo=None, creationflags=0, restore_signals=True, start_new_session=False, pass_fds=())
 
     pid=str(os.getpid())
     
